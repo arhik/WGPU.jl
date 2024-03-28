@@ -1,6 +1,7 @@
 module WGPUCore
 
 using CEnum
+using Tracy
 
 include("utils.jl")
 include("log.jl")
@@ -11,8 +12,6 @@ include("instance.jl")
 include("queue.jl")
 include("device.jl")
 
-
-
 include("droppable.jl")
 include("buffer.jl")
 
@@ -22,9 +21,6 @@ include("shader.jl")
 function requestAdapter(::WGPUAbstractBackend, canvas, powerPreference)
     @error "Backend is not defined yet"
 end
-
-
-
 
 mutable struct GPUTexture <: Droppable
     label::Any
@@ -456,15 +452,9 @@ mutable struct GPUPipelineLayout <: Droppable
     cBindingsList
 end
 
-function createPipelineLayout(gpuDevice, label, bindingLayouts, bindings)
-    # bindGroupLayoutArray = Ptr{WGPUBindGroupLayoutImpl}()
-    # if bindGroupLayoutObj.internal[] != C_NULL
-        # bindGroupLayoutArray = bindGroupLayoutObj.internal[]
-        # layoutCount = length(bindGroupLayoutArray)
-    # else
-    	# layoutCount = 0
-    # end
-    @assert length(bindings) == length(bindingLayouts)
+function createPipelineLayout(gpuDevice::GPUDevice, label::String, bindingLayouts, bindings)
+	# TODO we can remove assert since they are created together usually
+    # @assert length(bindings) == length(bindingLayouts)
     cBindingLayoutsList = makeLayoutEntryList(bindingLayouts)
     cBindingList = makeBindGroupEntryList(bindings)
     bindGroupLayout =
